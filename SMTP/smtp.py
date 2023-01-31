@@ -67,7 +67,7 @@ if recv4[:3] != '250':
 # Fill in start
 clientSocket.send(msg.encode())
 # recv5 = clientSocket.recv(1024).decode()
-# print(recv5)
+# print(clientSocket.recv(1024).decode())
 # if recv5[:3] != '250':
 #     print('250 reply not received from server.')
 # Fill in end
@@ -83,11 +83,11 @@ if recv6[:3] != '250':
 
 # Send QUIT command and get server response.
 # Fill in start
-quitCommand = 'QUIT'
+quitCommand = 'QUIT \n\r'
 clientSocket.send((quitCommand.encode()))
 recv7 = clientSocket.recv(1024).decode()
 print(recv7)
-if recv7[:3] != '250':
+if recv7[:3] != '221':
     print('250 reply not received from server.')
 
 # Fill in end
