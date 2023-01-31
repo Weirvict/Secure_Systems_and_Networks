@@ -1,0 +1,14 @@
+S: 220 bogus email service ready
+C: HELO Alice
+S: 250 howdy!
+C: MAIL FROM: <weirvict@isu.edu>
+S: 250 ok, let's move on
+C: RCPT TO: <weirvict@isu.edu>
+S: 250 ok, let's move on
+C: DATA
+S: 354 give me the message (. by itself to end)
+C: I love computer networks!
+S: 250 reply not received from server.
+S: 250 duly noted and ignored, thanks.
+C: QUIT
+S: 221 yeah, ok, buh bye.
