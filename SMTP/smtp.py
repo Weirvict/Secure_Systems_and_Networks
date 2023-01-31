@@ -13,7 +13,7 @@ mailport = 8025
 # Create socket called clientSocket and establish a TCP connection with mailserver
 #Fill in start
 clientSocket= socket(AF_INET,SOCK_STREAM)
-clientSocket.connect(mailserver,mailport)
+clientSocket.connect((mailserver,mailport))
 #Fill in end
 
 # NOTE: you should write better handling for return messages. The
@@ -46,7 +46,7 @@ if recv2[:3] != '250':
 # Send RCPT TO command and print server response.
 # Fill in start
 rcptToCommand = 'RCPT TO: <weirvict@isu.edu>\r\n'
-clientSocket.send(rcptToCommand.encode(1024))
+clientSocket.send(rcptToCommand.encode())
 recv3 = clientSocket.recv(1024).decode()
 print(recv3)
 if recv3[:3] != '250':
@@ -65,12 +65,11 @@ if recv4[:3] != '250':
 
 # Send message data.
 # Fill in start
-messageDataCommand = 'Hi'
-clientSocket.send(messageDataCommand.encode())
-recv5 = clientSocket.recv(1024).decode()
-print(recv5)
-if recv5[:3] != '250':
-    print('250 reply not received from server.')
+clientSocket.send(msg.encode())
+# recv5 = clientSocket.recv(1024).decode()
+# print(recv5)
+# if recv5[:3] != '250':
+#     print('250 reply not received from server.')
 # Fill in end
 
 # Message ends with a single period.
