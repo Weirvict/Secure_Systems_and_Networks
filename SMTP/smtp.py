@@ -34,11 +34,16 @@ if recv1[:3] != '250':
     print('250 reply not received from server.')
 
 # Send MAIL FROM command and print server response.
-# Fill in start and found on page 87 in the RFC5321
+# Fill in start and found on page 87 in the RFC5321 and this section of comments is similar for the rest of the functions
+# Creating the command based off of the syntax
 mailCommand = 'MAIL FROM: <weirvict@isu.edu>\r\n'
+# Sending the encoded mail
 clientSocket.send(mailCommand.encode())
+# Receives and decodes the message
 recv2 = clientSocket.recv(1024).decode()
+# prints
 print(recv2)
+# incase the sever does not recieve the message
 if recv2[:3] != '250':
     print('250 remply not recieved from sever')
 # Fill in end
