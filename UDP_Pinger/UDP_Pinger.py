@@ -2,12 +2,12 @@ from socket import *
 import time
 
 # Sever
-sever = "simplesmtp.though.net"
+server = "simplesmtp.though.net"
 UDPport = 8192
 
 # UDP socket creation and UDP connection with sever
 clientSocket= socket(AF_INET, SOCK_DGRAM)
-clientSocket.connect((sever,UDPport))
+clientSocket.connect((server,UDPport))
 
 # The following functions should use the time for received packets and the packet loss percentage to be able to compute and display it
 # Function for printing, should return format of print
@@ -15,21 +15,13 @@ def print_response(time, lost):
     # Gets the lost packet's percentage and print format
     lostLength = len(lost)
     computeLostPercentage = (lostLength//10) * 100
-    lostPercentFormat = "Thepacket loss percentage was: " + str(computeLostPercentage) + "/n"
+    lostPercentFormat = "Lost = " + str(lostLength) + " (" + str(computeLostPercentage) + "%)" + " "
+    mini = "Minimum: " + str(min(time)) + " "
+    maxa = "Maximum: " + str(max(time)) + " "
 
     # Combined all of the data from the 10 pings
-    combined = compute_min(time) + compute_max(time) + compute_average(time) + lostPercentFormat
+    combined = mini + maxa + compute_average(time) + lostPercentFormat
     return print(combined)
-
-# Function to get minimum and displays it
-def compute_min(time):
-    sort = time.sort
-    return "The minimum time for a packet was: " + str(sort[0]) + "/n"
-
-# Function to get maximum and displays it
-def compute_max(time):
-    sort = time.sort.reverse
-    return "The maximum time for a packet was: " + str(sort[0]) + "/n"
 
 # Function to get average and displays it
 def compute_average(time):
@@ -42,26 +34,26 @@ def compute_average(time):
         x+=1
     # gets average
     amount = amount//length
-    return "The average amount of time that the packets took was: " + str(amount) + "/n"
+    return "Average = " + str(amount) + " "
 
 def main():
-    packetNum = 0
     arrayTime = [] # For all the time and can be used to compare eachother
     arrayLost = [] # For the lost packets that went above 1s in elapsed time
 
     # should iterate 10 times
-    for packetNum in range (10):
+    for packetNum in range(0,10):
         # Initalize timer
         initialTime = time.time()
         packetNum += 1
 
         #pings
         message = "Packet " + str(packetNum)
-        clientSocket.send(message.encode())
+        clientSocket.sendto(str(initialTime).encode('utf-8'), (server,UDPport))
         recv = clientSocket.recv(1024).decode()
         print(recv)
         if recv[:3] != '250':
             print('250 reply not recieved from sever')
+
         # end ping
 
         # end timer and calculate elapsed time
@@ -72,8 +64,10 @@ def main():
             arrayLost.append(elapsed_time)
         #appends all the time together
         arrayTime.append(elapsed_time)
+
         #Formats the print line
-        print("The time it took for " + message + " is " + str(elapsed_time))
+        print("The time it took for " + message + " is in milli-seconds " + str(elapsed_time))
     # get response
     print_response(arrayTime,arrayLost)
 
+main()
