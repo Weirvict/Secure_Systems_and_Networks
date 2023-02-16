@@ -1,1 +1,47 @@
+UDP_Pinger Output
 
+C: Packet 1
+S: Packet 1
+C: Packet 2
+S: Packet 2
+C: Packet 3
+S: Request timed out
+C: Packet 4
+S: Packet 4
+C: Packet 5
+S: Packet 5
+C: Packet 6
+S: Packet 6
+C: Packet 7
+S: Packet 7
+C: Packet 8
+S: Request timed out
+C: Packet 9
+S: Packet 9
+C: Packet 10
+S: Packet 9
+
+One of the actual output of the UDP_Pinger with the stats:
+
+Packet 1
+The time it took for Packet 1 is 0.031297922134399414 milli-seconds
+Packet 2
+The time it took for Packet 2 is 0.0468745231628418 milli-seconds
+Request timed out
+The time it took for Packet 3 is 1.015676498413086 milli-seconds
+Packet 4
+The time it took for Packet 4 is 0.12502145767211914 milli-seconds
+Packet 5
+The time it took for Packet 5 is 0.04687213897705078 milli-seconds
+Packet 6
+The time it took for Packet 6 is 0.031252145767211914 milli-seconds
+Packet 7
+The time it took for Packet 7 is 0.0312502384185791 milli-seconds
+Packet 8
+The time it took for Packet 8 is 0.04687666893005371 milli-seconds
+Request timed out
+The time it took for Packet 9 is 1.0156278610229492 milli-seconds
+Packet 10
+The time it took for Packet 10 is 0.031244277954101562 milli-seconds
+Time in milli-seconds:
+Minimum: 0.031244277954101562 Maximum: 1.015676498413086 Average = 0.24219937324523927 Lost = 2 (20.0%)
