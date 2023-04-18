@@ -1,0 +1,4 @@
+
+- test build under windows/visual studio/cmake
+- better getopt handling (windows too)
+- better use of random number generator (easier in C++)

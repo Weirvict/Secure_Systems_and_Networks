@@ -2,6 +2,8 @@
 #include <random>
 #include <map>
 #include <memory>
+#include <string.h>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -60,14 +62,89 @@ void starttimer(int AorB, float increment);
 void tolayer3(int AorB, struct pkt packet);
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
+/**
+ * Defining
+ * RTT is the round trip time
+ * Chunksize is the amount in bytes
+ * AHost is the A portion
+ * BHost is the B portion
+ */
+#define RTT 25.0
+#define CHUNKSIZE 20
+#define AHOST 0
+#define BHOST 1
+
+using namespace std;
+// Declaring variables and letting them be equal 0 or getting struct
+int ackflag, aseq, bseq;
+int check = 0;
+int seq = 0;
+int lastsucess = 0;
+int numready = 0;
+int lastsequence = 0;
+int getwinsize = 8;
+vector<pkt> pkts;
+struct pkt last;
+
+int checksum(struct pkt);
+
+// Creating multiple packets based on inputs and I also referenced the strategy from the book's diagram
+struct pkt *createPacket(struct msg message)
+{
+    struct pkt *packet = new struct pkt;
+    (*packet).seqnum = seq;
+    (*packet).acknum = seq;
+    strcpy((*packet).payload, message.data);
+    (*packet).checksum = checksum((*packet));
+    return packet;
+}
+
+// Was not sure how to go about this, but I discussed this idea with another CS student who has taken this course. This checks the size of the packets and updates the local checksum, which is the set checksum.
+int checksum(struct pkt packet)
+{
+    char data[CHUNKSIZE];
+    strcpy(data, packet.payload);
+    int localchecksum = 0;
+    int i = 0;
+    while(i < CHUNKSIZE && data[i] != '\0')
+    {
+        localchecksum += data[i];
+        i++;
+    }
+
+    localchecksum += packet.seqnum;
+    localchecksum += packet.acknum;
+
+    return localchecksum;
+}
 
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
 	cout << __func__ << " called " << endl;
+	pkts.push_back(*createPacket(message));
+    // checks if it has not sent any and then updates
+    if(numready == 0)
+    {
+        last = pkts.at(seq);
+        tolayer3(AHOST, last);
+        cout << seq << endl;
+        seq++;
+		starttimer(AHOST, RTT);
+		cout << "A_Output timer start" << endl;
+		numready++;
+    }
+    // window size is 8 based on the instructions
+    else if(numready < getwinsize)
+    {
+        last = pkts.at(seq);
+        tolayer3(AHOST, last);
+        seq = seq + 1;
+    	numready++;
+    }
 }
 
-/* need be completed only for extra credit */
+/* need be completed only for extra credit... Not smart enough :)  */
 void B_output(struct msg message)
 {
 	cout << __func__ << " called " << endl;
@@ -77,40 +154,74 @@ void B_output(struct msg message)
 void A_input(struct pkt packet)
 {
 	cout << __func__ << " called " << endl;
+    // this is based off of TCP concept of ackflag
+	ackflag = 1;
+
+    //checks and updates
+    if(packet.acknum == lastsequence + 1) {
+        lastsequence++;
+        cout << "Packet acknum: " << packet.acknum << endl;
+    }
+	if(packet.acknum == lastsucess + getwinsize)
+        {
+            lastsucess += getwinsize;
+            stoptimer(AHOST);
+            numready = 0;
+        }
 }
 
 /* called when A's timer goes off */
-void A_timerinterrupt(void)
-{
-	cout << __func__ << " called " << endl;
+void A_timerinterrupt() {
+    cout << __func__ << " called " << endl;
+    for (int i = lastsequence; i < lastsequence + getwinsize && i < numready; i++) {
+        last = pkts.at(i);
+        tolayer3(AHOST, last);
+    }
 }
 
 /* the following routine will be called once (only) before any other */
 /* entity A routines are called. You can use it to do any initialization */
-void A_init(void)
-{
+void A_init(){
 	cout << __func__ << " called " << endl;
+	ackflag = 1;
+    aseq = 0;
 }
 
 /* Note that with simplex transfer from a-to-B, there is no B_output() */
 
 /* called from layer 3, when a packet arrives for layer 4 at B*/
-void B_input(struct pkt packet)
-{
-	cout << __func__ << " called " << endl;
+void B_input(struct pkt packet) {
+    cout << __func__ << " called " << endl;
+    //similar to what I did to A, but it is sent to layer 5 and a new packet is created if the sequence is the same
+    if (bseq == packet.seqnum && checksum(packet) == packet.checksum) {
+        tolayer5(BHOST, packet.payload);
+        pkt *ACK = new struct pkt;
+        (*ACK).acknum = bseq;
+        (*ACK).checksum = packet.seqnum;
+        tolayer3(BHOST, *ACK);
+        bseq++;
+    }
+    else if (bseq != packet.seqnum && checksum(packet) == packet.checksum) {
+        pkt *ACK = new struct pkt;
+        (*ACK).acknum = bseq - 1;
+        (*ACK).checksum = packet.seqnum;
+        tolayer3(BHOST, *ACK);
+    }
 }
 
+
 /* called when B's timer goes off */
-void B_timerinterrupt(void)
+void B_timerinterrupt()
 {
 	cout << __func__ << endl;
 }
 
 /* the following rouytine will be called once (only) before any other */
 /* entity B routines are called. You can use it to do any initialization */
-void B_init(void)
+void B_init()
 {
 	cout << __func__ << endl;
+	bseq = 0;
 }
 
 /*****************************************************************
