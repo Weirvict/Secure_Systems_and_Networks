@@ -10,6 +10,8 @@ UDP sockets to create a ping-like utility and will require the use of proper tim
 ## Reliable Transport Protocol
 Project for sending and recieving transport-level code for implementing a simple reliable data transfer protocol.There are two versions of this lab, the Alternating-Bit-Protocol version and the  Go-Back-N version. It will be simulated hardware/software environment. Stopping/starting of timers are also simulated, and timer interrupts will cause the timer handling routine to be activated.
 ***
+## Distance Vector Routing
+Tasked to be writing a "distributed" set of procedures that implement a distributed asynchronous distance vector routing for the network. 
 ## Author
 * Victoria Weir - victoriaweir@isu.edu
 ***
