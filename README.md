@@ -1,5 +1,5 @@
-# CS3337_Projects
-These are the projects from CS3337 Spring 2023
+# Secure Systems and Networks Projects
+These are the projects from Secure Systems and Networks Spring 2023
 ***
 ## SMTP Client
 The SMTP protocol, defined in RFC5321, forms the core of email services for the Internet. Created an SMTP client that interacts with an SMTP server which sends a correctly formed (RFC2822-compliant) message to a server. The server for this class is a special server that accepts pretty much anything handed to it as long as the SMTP protocol is being followed correctly. 
